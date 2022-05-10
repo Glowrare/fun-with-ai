@@ -9,7 +9,11 @@
     </header>
     <main>
       <PromptForm @submit-handler="submitHandler" />
-      <Responses :responseList="responseList" />
+      <Responses
+        v-if="responseList.length > 1"
+        :responseList="responseList"
+        @delete-handler="deleteHandler"
+      />
     </main>
   </div>
   <Spinner v-if="loading" />
@@ -27,15 +31,28 @@ export default {
       heroImage: `linear-gradient(90deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5)), url(${require("@/assets/hero-bg-image.jpg")})`,
       responseList: [
         {
-          id: 1,
+          id: "cmpl-56PtKK0UPT5wG0IhvYpMLWrABWjme",
+          timeStamp: "5/10/2022, 3:32:58 PM",
+          prompt: "Write a poem about life",
+          choices: [
+            {
+              text: "\n\nLife is a never-ending cycle\n\nWe go through highs and lows\n\nBut in the end, we all die\n\nAnd that's okay\n\nBecause life is a journey\n\nAnd it's all about learning\n\nAnd growing\n\nAnd experiencing new things\n\nAnd sometimes, we",
+              index: 0,
+              logprobs: null,
+              finish_reason: "length",
+            },
+          ],
+        },
+        {
+          id: "aaaad",
           prompt: "Test 1",
-          response: "Response 1",
+          choices: [{ text: "Response 1" }, { text: "Response 1b" }],
           timeStamp: "5/10/2022, 3:00:56 PM",
         },
         {
-          id: 2,
+          id: "dddeee",
           prompt: "Test 2",
-          response: "Response 2",
+          choices: [{ text: "Response 2" }],
           timeStamp: "5/10/2022, 2:00:56 PM",
         },
       ],
@@ -48,6 +65,10 @@ export default {
         // Disable keyboard interaction when API is fetching Response
         document.onkeydown = function () {
           return false;
+        };
+      } else {
+        document.onkeydown = function () {
+          return true;
         };
       }
     },
@@ -77,13 +98,19 @@ export default {
         id: id,
         timeStamp: new Date().toLocaleString(),
         prompt: data.prompt,
-        response: choices.text,
+        choices: choices,
       };
       console.log(`new response => ${newResponse}`);
       console.log(newResponse);
       this.responseList.unshift(newResponse);
 
       // console.log(data);
+    },
+    deleteHandler() {
+      this.responseList = [];
+      setTimeout(() => {
+        alert("Response List emptied!");
+      }, 0);
     },
   },
 };

@@ -4,10 +4,14 @@
       <h3>Prompt:</h3>
       <p>{{ prompt }}</p>
     </div>
-    <div>
+    <div v-for="(choice, index) in choices" :key="index">
+      <h3>Response:</h3>
+      <p>{{ choice.text }}</p>
+    </div>
+    <!-- <div>
       <h3>Response:</h3>
       <p>{{ response }}</p>
-    </div>
+    </div> -->
     <p class="timestamp">
       <small>Generated on {{ timeStamp }}.</small>
     </p>
@@ -21,8 +25,8 @@ export default {
       type: String,
       required: true,
     },
-    response: {
-      type: String,
+    choices: {
+      type: Array,
       required: true,
     },
     timeStamp: {

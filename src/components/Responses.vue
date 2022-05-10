@@ -6,6 +6,7 @@
       class="button"
       aria-label="Click to delete reponse list"
       title="Delete all responses"
+      @click="deleteResponses"
     >
       <img class="icon" src="@/assets/bin.svg" alt="" />
     </button>
@@ -15,7 +16,7 @@
       v-for="response in responseList"
       :key="response.id"
       :prompt="response.prompt"
-      :response="response.response"
+      :choices="response.choices"
       :timeStamp="response.timeStamp"
     />
   </ul>
@@ -25,25 +26,21 @@
 import ResponseItem from "./ResponseItem.vue";
 export default {
   components: { ResponseItem },
+  emits: ["delete-handler"],
   props: {
     responseList: Array,
   },
-  // data() {
-  //   return {
-  //     responseList: [
-  //       {
-  //         id: 1,
-  //         prompt: "Test 1",
-  //         response: "Response 1",
-  //       },
-  //       {
-  //         id: 2,
-  //         prompt: "Test 2",
-  //         response: "Response 2",
-  //       },
-  //     ],
-  //   };
-  // },
+  methods: {
+    deleteResponses() {
+      if (
+        confirm(
+          "Are you sure you want to delete all responses? This action CANNOT be reversed!"
+        )
+      ) {
+        this.$emit("delete-handler");
+      } else return;
+    },
+  },
 };
 </script>
 
@@ -91,5 +88,19 @@ export default {
 
   list-style: none;
   padding: 10px;
+  overflow: hidden scroll;
+}
+/* CUSTOM SCROLLBAR */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--light-color);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--light-grey);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--dark-grey);
 }
 </style>
