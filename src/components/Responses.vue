@@ -16,6 +16,7 @@
       :key="response.id"
       :prompt="response.prompt"
       :response="response.response"
+      :timeStamp="response.timeStamp"
     />
   </ul>
 </template>

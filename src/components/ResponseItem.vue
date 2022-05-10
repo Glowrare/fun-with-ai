@@ -8,6 +8,9 @@
       <h3>Response:</h3>
       <p>{{ response }}</p>
     </div>
+    <p class="timestamp">
+      <small>Generated on {{ timeStamp }}.</small>
+    </p>
   </li>
 </template>
 
@@ -19,6 +22,10 @@ export default {
       required: true,
     },
     response: {
+      type: String,
+      required: true,
+    },
+    timeStamp: {
       type: String,
       required: true,
     },
@@ -41,5 +48,12 @@ export default {
 }
 .response-item h3 {
   font-size: 13px;
+}
+.timestamp {
+  font-style: italic;
+  text-align: right;
+}
+.timestamp small {
+  font-size: 10px;
 }
 </style>

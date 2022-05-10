@@ -15,10 +15,14 @@
     </div>
     <button class="button">Submit</button>
   </form>
+  <!-- <Spinner /> -->
 </template>
 
 <script>
+// import Spinner from "./Spinner.vue";
+
 export default {
+  // components: { Spinner },
   data() {
     return {
       promptMessage: "",
@@ -28,7 +32,6 @@ export default {
   emits: ["submit-handler"],
   methods: {
     submitForm() {
-      // e.preventDefault();
       this.error = false;
 
       if (this.promptMessage === "") {
@@ -50,22 +53,6 @@ export default {
 
       this.promptMessage = "";
     },
-    //   async getResponse(data) {
-    //     const response = await fetch(
-    //       "https://api.openai.com/v1/engines/text-curie-001/completions",
-    //       {
-    //         method: "POST",
-    //         headers: {
-    //           "Content-Type": "application/json",
-    //           Authorization: `Bearer ${process.env.VUE_APP_API_KEY}`,
-    //         },
-    //         body: JSON.stringify(data),
-    //       }
-    //     );
-
-    //     // eslint-disable-next-line no-unused-vars
-    //     const responseData = await response.text();
-    //   },
   },
 };
 </script>

@@ -1,5 +1,9 @@
 <template>
-  <div class="app-wrapper" :style="{ backgroundImage: heroImage }">
+  <div
+    class="app-wrapper"
+    :class="{ disabled: loading }"
+    :style="{ backgroundImage: heroImage }"
+  >
     <header>
       <h1 class="pry-header">Fun with AI</h1>
     </header>
@@ -8,14 +12,16 @@
       <Responses :responseList="responseList" />
     </main>
   </div>
+  <Spinner v-if="loading" />
 </template>
 
 <script>
 import PromptForm from "./components/PromptForm.vue";
 import Responses from "./components/Responses.vue";
+import Spinner from "./components/Spinner.vue";
 export default {
   name: "App",
-  components: { PromptForm, Responses },
+  components: { PromptForm, Responses, Spinner },
   data() {
     return {
       heroImage: `linear-gradient(90deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5)), url(${require("@/assets/hero-bg-image.jpg")})`,
@@ -24,48 +30,60 @@ export default {
           id: 1,
           prompt: "Test 1",
           response: "Response 1",
+          timeStamp: "5/10/2022, 3:00:56 PM",
         },
         {
           id: 2,
           prompt: "Test 2",
           response: "Response 2",
+          timeStamp: "5/10/2022, 2:00:56 PM",
         },
       ],
+      loading: false,
     };
   },
+  watch: {
+    loading(newVal) {
+      if (newVal) {
+        // Disable keyboard interaction when API is fetching Response
+        document.onkeydown = function () {
+          return false;
+        };
+      }
+    },
+  },
   methods: {
-    // submitHandler() {
-    //   // e.preventDefault();
-
-    //   const formData = {
-    //     prompt: this.promptMessage,
-    //     temperature: 0.5,
-    //     max_tokens: 64,
-    //     top_p: 1.0,
-    //     frequency_penalty: 0.0,
-    //     presence_penalty: 0.0,
-    //   };
-    //   console.log(formData);
-
-    //   this.promptMessage = "";
-    // },
     async submitHandler(data) {
-      // const response = await fetch(
-      //   "https://api.openai.com/v1/engines/text-curie-001/completions",
-      //   {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //       Authorization: `Bearer ${process.env.VUE_APP_API_KEY}`,
-      //     },
-      //     body: JSON.stringify(data),
-      //   }
-      // );
+      this.loading = true;
+      const response = await fetch(
+        "https://api.openai.com/v1/engines/text-curie-001/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${process.env.VUE_APP_API_KEY}`,
+          },
+          body: JSON.stringify(data),
+        }
+      );
 
-      // eslint-disable-next-line no-unused-vars
-      // const responseData = await response.text();
+      const responseData = await response.json();
+      const { id, choices } = responseData;
+      console.log(responseData);
+      console.log(`response data => ${responseData}`);
+      this.loading = false;
 
-      console.log(data);
+      const newResponse = {
+        id: id,
+        timeStamp: new Date().toLocaleString(),
+        prompt: data.prompt,
+        response: choices.text,
+      };
+      console.log(`new response => ${newResponse}`);
+      console.log(newResponse);
+      this.responseList.unshift(newResponse);
+
+      // console.log(data);
     },
   },
 };
@@ -101,6 +119,14 @@ export default {
 
   padding: 20px 40px;
 }
+.app-wrapper.disabled {
+  pointer-events: none;
+  user-select: none;
+}
+.app-wrapper.disabled button {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
 .pry-header {
   font-weight: 700;
   font-size: 54px;
@@ -112,5 +138,11 @@ export default {
   text-transform: uppercase;
   /* margin-bottom: 10px; */
   /* font-weight: 500; */
+}
+.sr-only {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
 }
 </style>
