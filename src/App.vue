@@ -7,6 +7,10 @@
     </header>
     <main>
       <PromptForm @submit-handler="submitHandler" />
+
+      <small class="error-message" v-if="this.error"
+        >Oops! Something went wrong. Please try again.</small
+      >
       <Responses
         v-if="responseList.length > 1"
         :responseList="responseList"
@@ -38,6 +42,7 @@ export default {
       responseList: [],
       loading: false,
       showButton: false,
+      error: false,
     };
   },
   created() {
@@ -76,35 +81,46 @@ export default {
   methods: {
     async submitHandler(data) {
       this.loading = true;
-      const response = await fetch(
-        "https://api.openai.com/v1/engines/text-curie-001/completions",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${process.env.VUE_APP_API_KEY}`,
-          },
-          body: JSON.stringify(data),
-        }
-      );
+      this.error = false;
+      try {
+        const response = await fetch(
+          "https://api.openai.com/v1/engines/text-curie-001/completions",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${process.env.VUE_APP_API_KEY}`,
+            },
+            body: JSON.stringify(data),
+          }
+        );
 
-      const responseData = await response.json();
-      const { id, choices } = responseData;
+        const responseData = await response.json();
+        const { id, choices } = responseData;
+
+        const newResponse = {
+          id: id,
+          timeStamp: new Date().toLocaleString(),
+          prompt: data.prompt,
+          choices: choices,
+        };
+        this.responseList.unshift(newResponse);
+
+        //update to local storage
+        localStorage.setItem(
+          "localResponseList",
+          JSON.stringify(this.responseList)
+        );
+      } catch (e) {
+        console.error(e);
+        this.error = true;
+
+        // Remove error message after three seconts
+        setTimeout(() => {
+          this.error = false;
+        }, 3000);
+      }
       this.loading = false;
-
-      const newResponse = {
-        id: id,
-        timeStamp: new Date().toLocaleString(),
-        prompt: data.prompt,
-        choices: choices,
-      };
-      this.responseList.unshift(newResponse);
-
-      //update to local storage
-      localStorage.setItem(
-        "localResponseList",
-        JSON.stringify(this.responseList)
-      );
     },
     deleteHandler() {
       this.responseList = [];
@@ -230,6 +246,14 @@ button {
   width: 0;
   height: 0;
   overflow: hidden;
+}
+.error-message {
+  color: #ff0000;
+  display: block;
+  font-size: 12px;
+  font-style: italic;
+  position: relative;
+  top: -40px;
 }
 @media screen and (max-width: 480px) {
   .app-wrapper {

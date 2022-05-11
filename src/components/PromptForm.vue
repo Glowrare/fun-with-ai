@@ -85,10 +85,7 @@ export default {
   outline: dotted 2px var(--light-color);
 }
 .error-message {
-  color: #ff0000;
-  display: block;
-  font-size: 12px;
-  font-style: italic;
+  top: 0;
 }
 .button {
   background: var(--light-color);
