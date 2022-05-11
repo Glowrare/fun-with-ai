@@ -82,13 +82,13 @@ export default {
   }
 }
 .responses {
-  height: 500px;
+  max-height: 500px;
   border: 2px solid var(--light-color);
   max-width: 500px;
 
   list-style: none;
   padding: 10px;
-  overflow: hidden scroll;
+  overflow: hidden auto;
 }
 /* CUSTOM SCROLLBAR */
 ::-webkit-scrollbar {
@@ -106,7 +106,7 @@ export default {
 
 @media only screen and (max-width: 968px) {
   .responses {
-    height: auto;
+    max-height: auto;
     overflow: auto;
   }
 }

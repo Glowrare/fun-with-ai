@@ -12,7 +12,7 @@
         >Oops! Something went wrong. Please try again.</small
       >
       <Responses
-        v-if="responseList.length > 1"
+        v-if="responseList.length >= 1"
         :responseList="responseList"
         @delete-handler="deleteHandler"
       />
