@@ -6,7 +6,7 @@
         v-model.trim="promptMessage"
         id="prompt-box"
         class="form-control"
-        placeholder="Enter prompt"
+        placeholder="Enter text prompt and have fun with GPT-3. e.g. 'Who is batman'"
         rows="5"
       ></textarea>
       <small class="error-message" v-if="this.error"
@@ -15,14 +15,10 @@
     </div>
     <button class="button">Submit</button>
   </form>
-  <!-- <Spinner /> -->
 </template>
 
 <script>
-// import Spinner from "./Spinner.vue";
-
 export default {
-  // components: { Spinner },
   data() {
     return {
       promptMessage: "",
@@ -47,7 +43,6 @@ export default {
         frequency_penalty: 0.0,
         presence_penalty: 0.0,
       };
-      // console.log(formData);
 
       this.$emit("submit-handler", formData);
 

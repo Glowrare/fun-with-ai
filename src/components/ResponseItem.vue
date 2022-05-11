@@ -8,10 +8,6 @@
       <h3>Response:</h3>
       <p>{{ choice.text }}</p>
     </div>
-    <!-- <div>
-      <h3>Response:</h3>
-      <p>{{ response }}</p>
-    </div> -->
     <p class="timestamp">
       <small>Generated on {{ timeStamp }}.</small>
     </p>

@@ -4,8 +4,9 @@
     :class="{ disabled: loading }"
     :style="{ backgroundImage: heroImage }"
   >
-    <header>
+    <header class="app-header">
       <h1 class="pry-header">Fun with AI</h1>
+      <img src="@/assets/robot.svg" alt="" class="app-header-icon" />
     </header>
     <main>
       <PromptForm @submit-handler="submitHandler" />
@@ -29,35 +30,18 @@ export default {
   data() {
     return {
       heroImage: `linear-gradient(90deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5)), url(${require("@/assets/hero-bg-image.jpg")})`,
-      responseList: [
-        {
-          id: "cmpl-56PtKK0UPT5wG0IhvYpMLWrABWjme",
-          timeStamp: "5/10/2022, 3:32:58 PM",
-          prompt: "Write a poem about life",
-          choices: [
-            {
-              text: "\n\nLife is a never-ending cycle\n\nWe go through highs and lows\n\nBut in the end, we all die\n\nAnd that's okay\n\nBecause life is a journey\n\nAnd it's all about learning\n\nAnd growing\n\nAnd experiencing new things\n\nAnd sometimes, we",
-              index: 0,
-              logprobs: null,
-              finish_reason: "length",
-            },
-          ],
-        },
-        {
-          id: "aaaad",
-          prompt: "Test 1",
-          choices: [{ text: "Response 1" }, { text: "Response 1b" }],
-          timeStamp: "5/10/2022, 3:00:56 PM",
-        },
-        {
-          id: "dddeee",
-          prompt: "Test 2",
-          choices: [{ text: "Response 2" }],
-          timeStamp: "5/10/2022, 2:00:56 PM",
-        },
-      ],
+      responseList: [],
       loading: false,
     };
+  },
+  created() {
+    // Check if entry already exists in local storage
+    if (localStorage.getItem("localResponseList") !== null) {
+      // Retrieve the object from storage
+      const retrievedList = localStorage.getItem("localResponseList");
+
+      this.responseList = JSON.parse(retrievedList);
+    }
   },
   watch: {
     loading(newVal) {
@@ -91,7 +75,7 @@ export default {
       const responseData = await response.json();
       const { id, choices } = responseData;
       console.log(responseData);
-      console.log(`response data => ${responseData}`);
+      console.log("response data =>");
       this.loading = false;
 
       const newResponse = {
@@ -100,14 +84,19 @@ export default {
         prompt: data.prompt,
         choices: choices,
       };
-      console.log(`new response => ${newResponse}`);
+      console.log("new response =>");
       console.log(newResponse);
       this.responseList.unshift(newResponse);
 
-      // console.log(data);
+      //update to local storage
+      localStorage.setItem(
+        "localResponseList",
+        JSON.stringify(this.responseList)
+      );
     },
     deleteHandler() {
       this.responseList = [];
+      localStorage.removeItem("localResponseList");
       setTimeout(() => {
         alert("Response List emptied!");
       }, 0);
@@ -140,7 +129,7 @@ export default {
 .app-wrapper {
   background-repeat: no-repeat;
   background-size: cover;
-  background-attachment: fixed;
+  /* background-attachment: fixed; */
   background-position: center top;
   min-height: 100vh;
 
@@ -151,25 +140,37 @@ export default {
   user-select: none;
 }
 .app-wrapper.disabled button {
-  cursor: not-allowed;
   opacity: 0.4;
+}
+.app-header {
+  display: flex;
+  margin-bottom: 50px;
+  align-items: center;
+}
+.app-header-icon {
+  width: 30px;
+  margin-left: 10px;
 }
 .pry-header {
   font-weight: 700;
   font-size: 54px;
-  margin-bottom: 50px;
+  font-size: clamp(24px, calc(1.5rem + 2vw), 54px);
   text-transform: uppercase;
 }
 .sec-header {
   font-size: 16px;
   text-transform: uppercase;
-  /* margin-bottom: 10px; */
-  /* font-weight: 500; */
 }
 .sr-only {
   position: absolute;
   width: 0;
   height: 0;
   overflow: hidden;
+}
+@media screen and (max-width: 480px) {
+  .app-wrapper {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
 }
 </style>
