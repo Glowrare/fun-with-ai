@@ -103,4 +103,11 @@ export default {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--dark-grey);
 }
+
+@media only screen and (max-width: 968px) {
+  .responses {
+    height: auto;
+    overflow: auto;
+  }
+}
 </style>

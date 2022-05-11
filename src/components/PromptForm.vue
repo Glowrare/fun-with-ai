@@ -7,6 +7,7 @@
         id="prompt-box"
         class="form-control"
         placeholder="Enter text prompt and have fun with GPT-3. e.g. 'Who is batman'"
+        autofocus
         rows="5"
       ></textarea>
       <small class="error-message" v-if="this.error"

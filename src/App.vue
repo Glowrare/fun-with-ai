@@ -1,9 +1,6 @@
 <template>
-  <div
-    class="app-wrapper"
-    :class="{ disabled: loading }"
-    :style="{ backgroundImage: heroImage }"
-  >
+  <div class="bg" :style="{ backgroundImage: heroImage }"></div>
+  <div class="app-wrapper" :class="{ disabled: loading }">
     <header class="app-header">
       <h1 class="pry-header">Fun with AI</h1>
       <img src="@/assets/robot.svg" alt="" class="app-header-icon" />
@@ -17,6 +14,14 @@
       />
     </main>
   </div>
+  <button
+    v-show="showButton"
+    @click.prevent="scrollToTop"
+    class="back-to-top-btn"
+    aria-label="Click button to go back to top of the page"
+  >
+    <img src="@/assets/cil_chevron-top.svg" alt="" />
+  </button>
   <Spinner v-if="loading" />
 </template>
 
@@ -32,6 +37,7 @@ export default {
       heroImage: `linear-gradient(90deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5)), url(${require("@/assets/hero-bg-image.jpg")})`,
       responseList: [],
       loading: false,
+      showButton: false,
     };
   },
   created() {
@@ -42,6 +48,16 @@ export default {
 
       this.responseList = JSON.parse(retrievedList);
     }
+  },
+  mounted() {
+    window.addEventListener("scroll", () => {
+      setTimeout(() => {
+        this.scrollHandler();
+      }, 100);
+    });
+  },
+  beforeUnmount() {
+    window.removeEventListener("scroll", this.scrollHandler);
   },
   watch: {
     loading(newVal) {
@@ -74,8 +90,6 @@ export default {
 
       const responseData = await response.json();
       const { id, choices } = responseData;
-      console.log(responseData);
-      console.log("response data =>");
       this.loading = false;
 
       const newResponse = {
@@ -84,8 +98,6 @@ export default {
         prompt: data.prompt,
         choices: choices,
       };
-      console.log("new response =>");
-      console.log(newResponse);
       this.responseList.unshift(newResponse);
 
       //update to local storage
@@ -100,6 +112,16 @@ export default {
       setTimeout(() => {
         alert("Response List emptied!");
       }, 0);
+    },
+    scrollHandler() {
+      if (window.scrollY > 20) {
+        this.showButton = true;
+      } else {
+        this.showButton = false;
+      }
+    },
+    scrollToTop() {
+      window.scrollTo({ top: 0, behavior: "smooth" });
     },
   },
 };
@@ -121,18 +143,34 @@ export default {
   margin: 0;
   box-sizing: border-box;
 }
+body {
+  background: var(--dark-color);
+}
+button {
+  font-family: var(--body-font);
+}
 #app {
   font-family: var(--body-font);
   color: var(--light-color);
   font-weight: 500;
 }
-.app-wrapper {
-  background-repeat: no-repeat;
-  background-size: cover;
-  /* background-attachment: fixed; */
-  background-position: center top;
-  min-height: 100vh;
+.bg {
+  position: fixed;
 
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+
+  height: 0;
+  padding: 0;
+  padding-bottom: 56.25%;
+  background-position: center center;
+  background-size: 100%;
+  background-repeat: no-repeat;
+}
+.app-wrapper {
+  position: relative;
   padding: 20px 40px;
 }
 .app-wrapper.disabled {
@@ -160,6 +198,32 @@ export default {
 .sec-header {
   font-size: 16px;
   text-transform: uppercase;
+}
+.back-to-top-btn {
+  /* display: none; */
+
+  background: var(--light-grey);
+  color: var(--dark-color);
+  border: none;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  font-size: 30px;
+
+  padding: 10px;
+
+  position: fixed;
+  bottom: 50px;
+  right: 20px;
+
+  cursor: pointer;
+}
+.back-to-top-btn:hover,
+.back-to-top-btn:focus {
+  box-shadow: 1px 2px 16px 4px rgba(255, 255, 255, 0.65);
+}
+.back-to-top-btn img {
+  max-width: 100%;
 }
 .sr-only {
   position: absolute;
